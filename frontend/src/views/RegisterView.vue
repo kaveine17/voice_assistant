@@ -1,46 +1,51 @@
 <template>
   <div class="auth">
-    <div class="auth__card">
-      <div class="auth__top">
-        <router-link to="/" class="auth__back">← На главную</router-link>
-      </div>
+    <div class="auth__top">
+      <RouterLink class="auth__back" to="/">← На главную</RouterLink>
+    </div>
 
+    <div class="auth__card">
       <h1 class="auth__title">Регистрация</h1>
-      <p class="auth__subtitle">Придумайте логин и пароль</p>
+      <p class="auth__subtitle">Создайте аккаунт</p>
 
       <form class="auth__form" @submit.prevent="onSubmit">
         <input
-          v-model="username"
+          v-model.trim="email"
           class="auth__input"
-          type="text"
-          autocomplete="username"
-          placeholder="Логин"
+          type="email"
+          placeholder="Email"
+          autocomplete="email"
+          required
         />
-
         <input
           v-model="password"
           class="auth__input"
           type="password"
-          autocomplete="new-password"
           placeholder="Пароль (минимум 6 символов)"
+          autocomplete="new-password"
+          required
+          minlength="6"
         />
-
         <input
           v-model="password2"
           class="auth__input"
           type="password"
-          autocomplete="new-password"
           placeholder="Повторите пароль"
+          autocomplete="new-password"
+          required
+          minlength="6"
         />
 
         <p v-if="error" class="auth__error">{{ error }}</p>
 
-        <button class="auth__button" type="submit">Зарегистрироваться</button>
+        <button class="auth__button" type="submit" :disabled="loading">
+          {{ loading ? 'Создаём…' : 'Создать аккаунт' }}
+        </button>
       </form>
 
       <div class="auth__footer">
         Уже есть аккаунт?
-        <router-link to="/login">Войти</router-link>
+        <RouterLink to="/login">Войти</RouterLink>
       </div>
     </div>
   </div>
@@ -52,42 +57,29 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const username = ref('')
+const email = ref('')
 const password = ref('')
 const password2 = ref('')
-const error = ref('')
+const loading = ref(false)
+const error = ref<string | null>(null)
 
-function onSubmit() {
-  error.value = ''
+async function onSubmit() {
+  error.value = null
+  loading.value = true
+  try {
+    await new Promise((r) => setTimeout(r, 450))
 
-  const u = username.value.trim()
-  const p1 = password.value
-  const p2 = password2.value
+    if (!email.value.includes('@')) throw new Error('Некорректный email')
+    if (password.value.length < 6) throw new Error('Пароль слишком короткий')
+    if (password.value !== password2.value) throw new Error('Пароли не совпадают')
 
-  if (!u || !p1 || !p2) {
-    error.value = 'Заполните все поля.'
-    return
+    // Позже заменим на реальный /auth/register
+    router.push('/login')
+  } catch (e: unknown) {
+  error.value =
+    e instanceof Error ? e.message : 'Ошибка регистрации'
+} finally {
+    loading.value = false
   }
-
-  if (u.length < 3) {
-    error.value = 'Логин должен быть минимум 3 символа.'
-    return
-  }
-
-  if (p1.length < 6) {
-    error.value = 'Пароль должен быть минимум 6 символов.'
-    return
-  }
-
-  if (p1 !== p2) {
-    error.value = 'Пароли не совпадают.'
-    return
-  }
-
-  // Пока заглушка: считаем, что регистрация успешна
-  localStorage.setItem('va_auth', '1')
-  localStorage.setItem('va_user', u)
-
-  router.push('/chat')
 }
 </script>

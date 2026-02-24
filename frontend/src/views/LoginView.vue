@@ -1,38 +1,42 @@
 <template>
   <div class="auth">
-    <div class="auth__card">
-      <div class="auth__top">
-        <router-link to="/" class="auth__back">← На главную</router-link>
-      </div>
+    <div class="auth__top">
+      <RouterLink class="auth__back" to="/">← На главную</RouterLink>
+    </div>
 
+    <div class="auth__card">
       <h1 class="auth__title">Вход</h1>
-      <p class="auth__subtitle">Введите логин и пароль</p>
+      <p class="auth__subtitle">Введите почту и пароль</p>
 
       <form class="auth__form" @submit.prevent="onSubmit">
         <input
-          v-model="username"
+          v-model.trim="email"
           class="auth__input"
-          type="text"
-          autocomplete="username"
-          placeholder="Логин"
+          type="email"
+          placeholder="Email"
+          autocomplete="email"
+          required
         />
-
         <input
           v-model="password"
           class="auth__input"
           type="password"
-          autocomplete="current-password"
           placeholder="Пароль"
+          autocomplete="current-password"
+          required
+          minlength="6"
         />
 
         <p v-if="error" class="auth__error">{{ error }}</p>
 
-        <button class="auth__button" type="submit">Войти</button>
+        <button class="auth__button" type="submit" :disabled="loading">
+          {{ loading ? 'Входим…' : 'Войти' }}
+        </button>
       </form>
 
       <div class="auth__footer">
         Нет аккаунта?
-        <router-link to="/register">Зарегистрироваться</router-link>
+        <RouterLink to="/register">Зарегистрироваться</RouterLink>
       </div>
     </div>
   </div>
@@ -44,25 +48,28 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const username = ref('')
+const email = ref('')
 const password = ref('')
-const error = ref('')
+const loading = ref(false)
+const error = ref<string | null>(null)
 
-function onSubmit() {
-  error.value = ''
+async function onSubmit() {
+  error.value = null
+  loading.value = true
+  try {
+    // Пока бэка нет — делаем “мок” входа.
+    // Позже заменим на реальный запрос /auth/login
+    await new Promise((r) => setTimeout(r, 400))
 
-  const u = username.value.trim()
-  const p = password.value.trim()
+    if (!email.value.includes('@')) throw new Error('Некорректный email')
+    if (password.value.length < 6) throw new Error('Пароль слишком короткий')
 
-  if (!u || !p) {
-    error.value = 'Заполните логин и пароль.'
-    return
+    router.push('/chat')
+  } catch (e: unknown) {
+  error.value =
+    e instanceof Error ? e.message : 'Ошибка входа'
+} finally {
+    loading.value = false
   }
-
-  // Пока заглушка авторизации
-  localStorage.setItem('va_auth', '1')
-  localStorage.setItem('va_user', u)
-
-  router.push('/chat')
 }
 </script>
