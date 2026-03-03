@@ -17,6 +17,7 @@
           autocomplete="email"
           required
         />
+
         <input
           v-model="password"
           class="auth__input"
@@ -45,6 +46,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { login, isAuthed } from '@/services/auth'
 
 const router = useRouter()
 
@@ -53,22 +55,20 @@ const password = ref('')
 const loading = ref(false)
 const error = ref<string | null>(null)
 
+// если уже есть токен — сразу в чат
+if (isAuthed()) {
+  router.replace('/chat')
+}
+
 async function onSubmit() {
   error.value = null
   loading.value = true
   try {
-    // Пока бэка нет — делаем “мок” входа.
-    // Позже заменим на реальный запрос /auth/login
-    await new Promise((r) => setTimeout(r, 400))
-
-    if (!email.value.includes('@')) throw new Error('Некорректный email')
-    if (password.value.length < 6) throw new Error('Пароль слишком короткий')
-
+    await login(email.value, password.value)
     router.push('/chat')
   } catch (e: unknown) {
-  error.value =
-    e instanceof Error ? e.message : 'Ошибка входа'
-} finally {
+    error.value = e instanceof Error ? e.message : 'Ошибка входа'
+  } finally {
     loading.value = false
   }
 }

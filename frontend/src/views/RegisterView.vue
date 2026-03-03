@@ -17,6 +17,7 @@
           autocomplete="email"
           required
         />
+
         <input
           v-model="password"
           class="auth__input"
@@ -26,6 +27,7 @@
           required
           minlength="6"
         />
+
         <input
           v-model="password2"
           class="auth__input"
@@ -54,6 +56,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { register, isAuthed } from '@/services/auth'
 
 const router = useRouter()
 
@@ -63,22 +66,23 @@ const password2 = ref('')
 const loading = ref(false)
 const error = ref<string | null>(null)
 
+if (isAuthed()) {
+  router.replace('/chat')
+}
+
 async function onSubmit() {
   error.value = null
   loading.value = true
   try {
-    await new Promise((r) => setTimeout(r, 450))
+    if (password.value !== password2.value) {
+      throw new Error('Пароли не совпадают')
+    }
 
-    if (!email.value.includes('@')) throw new Error('Некорректный email')
-    if (password.value.length < 6) throw new Error('Пароль слишком короткий')
-    if (password.value !== password2.value) throw new Error('Пароли не совпадают')
-
-    // Позже заменим на реальный /auth/register
+    await register(email.value, password.value)
     router.push('/login')
   } catch (e: unknown) {
-  error.value =
-    e instanceof Error ? e.message : 'Ошибка регистрации'
-} finally {
+    error.value = e instanceof Error ? e.message : 'Ошибка регистрации'
+  } finally {
     loading.value = false
   }
 }

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { isAuthed } from '@/services/auth'
 
 import HomeView from '../views/HomeView.vue'
 import ChatView from '../views/ChatView.vue'
@@ -30,4 +31,15 @@ const router = createRouter({
   ]
 })
 
+
+router.beforeEach((to) => {
+  const publicPaths = ['/', '/login', '/register']
+
+  if (!publicPaths.includes(to.path) && !isAuthed()) {
+    return '/login'
+  }
+})
+
+
 export default router
+

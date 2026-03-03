@@ -1,11 +1,26 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI
-from database import engine, Base
+from fastapi.middleware.cors import CORSMiddleware
 import models 
+from database import Base, engine
+from auth_router import router as auth_router
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 Base.metadata.create_all(bind=engine)
 
+app.include_router(auth_router)
+
 @app.get("/")
-def read_root():
-    return {"message": "Backend + PostgreSQL работает 🚀"}
+def root():
+    return {"status": "ok"}
