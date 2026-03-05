@@ -21,13 +21,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { isAuthed, getAuthedEmail, logout } from '@/services/auth'
+import { logout } from '@/services/auth'
+import { authedEmail, authedToken } from '@/services/authStore'
 
 const router = useRouter()
 const route = useRoute()
 
-const authed = computed(() => isAuthed())
-const email = computed(() => getAuthedEmail())
+
+const authed = computed(() => Boolean(authedToken.value))
+const email = computed(() => authedEmail.value)
 
 function onLogout() {
   logout()

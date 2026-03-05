@@ -1,4 +1,6 @@
+
 // frontend/src/services/auth.ts
+import { syncAuthFromStorage } from './authStore'
 const API = 'http://127.0.0.1:8000'
 
 const TOKEN_KEY = 'va_token'
@@ -19,6 +21,7 @@ export function getAuthedEmail() {
 export function logout() {
   localStorage.removeItem(TOKEN_KEY)
   localStorage.removeItem(EMAIL_KEY)
+  syncAuthFromStorage()
 }
 
 export async function register(email: string, password: string) {
@@ -51,6 +54,7 @@ export async function login(email: string, password: string) {
 
   localStorage.setItem(TOKEN_KEY, data.access_token)
   localStorage.setItem(EMAIL_KEY, email.toLowerCase())
+  syncAuthFromStorage()
 }
 
 export async function me() {

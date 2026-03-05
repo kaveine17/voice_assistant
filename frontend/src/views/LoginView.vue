@@ -61,6 +61,7 @@ if (isAuthed()) {
 }
 
 async function onSubmit() {
+  console.log('SUBMIT LOGIN', email.value, password.value)
   error.value = null
   loading.value = true
   try {

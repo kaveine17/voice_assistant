@@ -107,6 +107,7 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 
   backdrop-filter: blur(8px);
+  
 }
 
 .topbar__brand {
@@ -151,4 +152,102 @@
   @extend .btn--ghost;
 
   padding: 8px 14px;
+}
+
+/* =======================
+   Responsive
+======================= */
+
+@media (max-width: 1024px) {
+  .page {
+    padding: 18px;
+  }
+
+  .card {
+    padding: 26px;
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    padding: 14px 16px;
+  }
+
+  .topbar__brand {
+    font-size: 16px;
+  }
+
+  .topbar__right {
+    gap: 10px;
+  }
+
+  .topbar__email {
+    display: none; // на мобиле лучше не показывать почту в шапке
+  }
+
+  .card {
+    width: 100%;
+    padding: 22px;
+    border-radius: 18px;
+  }
+
+  .title {
+    font-size: 28px;
+    line-height: 1.15;
+  }
+
+  .subtitle {
+    font-size: 15px;
+  }
+
+  .actions {
+    gap: 10px;
+  }
+
+  .btn {
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 520px) {
+  .page {
+    padding: 14px;
+  }
+
+  .card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .badge {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .meta {
+    gap: 8px;
+  }
+
+  .meta span {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
 }
